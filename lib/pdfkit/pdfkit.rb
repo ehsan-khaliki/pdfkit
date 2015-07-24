@@ -60,7 +60,7 @@ class PDFKit
 
     invoke = command(path)
 
-     stdin, stdout, stderr = Open3.popen3(invoke) do |pdf|
+    result = IO.popen(invoke, "wb+") do |pdf|
       pdf.puts(@source.to_s) if @source.html?
       pdf.close_write
       pdf.gets(nil) if path.nil?
@@ -68,7 +68,7 @@ class PDFKit
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke} #{stderr}" if empty_result?(path, result) or !successful?($?)
+    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if empty_result?(path, result) or !successful?($?)
     return result
   end
 
